@@ -47,7 +47,7 @@ describe('Tech Routes', () => {
 
     describe('POST /', () => {
         it('should create a new tech stack', async () => {
-            const newTech = { name: 'Vitest' };
+            const newTech = { name: 'React' };
             const createdTech = { id: 1, ...newTech };
 
             mocks.mockReturning.mockResolvedValue([createdTech]);
@@ -66,6 +66,59 @@ describe('Tech Routes', () => {
                 data: createdTech,
             });
             expect(mocks.mockInsert).toHaveBeenCalled();
+        });
+
+        it('should return 409 if tech stack already exists', async () => {
+            const newTech = { name: 'React' };
+
+            // Mock error with Postgres unique violation
+            const pgError = new Error('duplicate key value violates unique constraint');
+            (pgError as any).cause = { code: 23505 };
+
+            mocks.mockReturning.mockRejectedValue(pgError);
+
+            const res = await techRoute.request('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newTech),
+            });
+
+            expect(res.status).toBe(409);
+            const body = await res.json();
+            expect(body).toEqual({
+                success: false,
+                message: 'Tech stack already exists',
+            });
+            expect(mocks.mockInsert).toHaveBeenCalled();
+        });
+
+        it('should return 500 if an error occurs', async () => {
+            const newTech = { name: 'React' };
+
+            // Mock console.error to suppress expected error logs
+            const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
+            // Mock generic database error (not unique violation)
+            const dbError = new Error('Connection timeout');
+            (dbError as any).cause = { code: '08006' }; // Postgres connection failure code
+
+            mocks.mockReturning.mockRejectedValue(dbError);
+
+            const res = await techRoute.request('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newTech),
+            });
+
+            // Just verify status code - global error handler is tested separately
+            expect(res.status).toBe(500);
+            expect(mocks.mockInsert).toHaveBeenCalled();
+
+            // Verify error was logged
+            expect(consoleErrorSpy).toHaveBeenCalled();
+
+            // Restore console.error
+            consoleErrorSpy.mockRestore();
         });
     });
 
@@ -149,9 +202,13 @@ describe('Tech Routes', () => {
 
             expect(res.status).toBe(200);
             const body = await res.json();
+
             expect(body).toEqual({
                 success: true,
                 message: 'Tech stack deleted',
+                data: {
+                    id: 1
+                }
             });
         });
 

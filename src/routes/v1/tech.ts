@@ -1,7 +1,7 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import { eq } from 'drizzle-orm';
-import { createResponseSchema, errorResponseSchema } from '../../lib/api.ts';
 
+import { createResponseSchema, errorResponseSchema, successResponse, errorResponse } from '../../lib/api.ts';
 import { db } from '../../db/index.ts';
 import { techStack } from '../../db/schema.ts';
 import {
@@ -34,22 +34,32 @@ const createTechRoute = createRoute({
         },
       },
     },
+    409: {
+      description: 'Tech stack already exists',
+      content: {
+        'application/json': {
+          schema: errorResponseSchema,
+        },
+      },
+    },
   },
 });
 
 techRoute.openapi(createTechRoute, async (c) => {
   const body = c.req.valid('json');
 
-  const [result] = await db.insert(techStack).values(body).returning();
-
-  return c.json(
-    {
-      success: true,
-      message: 'Tech stack created successfully',
-      data: result,
-    },
-    201
-  );
+  try {
+    const [result] = await db.insert(techStack).values(body).returning();
+    return c.json(
+      successResponse(result, 'Tech stack created successfully'),
+      201
+    );
+  } catch (error: any) {
+    if (error.cause.code === 23505) {
+      return c.json(errorResponse('Tech stack already exists'), 409);
+    }
+    throw error;
+  }
 });
 
 const getAllTechRoute = createRoute({
@@ -70,19 +80,12 @@ const getAllTechRoute = createRoute({
 
 techRoute.openapi(getAllTechRoute, async (c) => {
   const results = await db.select().from(techStack);
-  const typedResults = results.map((item) => ({
-    ...item,
-  }));
+
   return c.json(
-    {
-      success: true,
-      message: 'Tech stacks fetched successfully',
-      data: typedResults,
-    },
+    successResponse(results, 'Tech stacks fetched successfully'),
     200
   );
 });
-
 
 const getTechByIDRoute = createRoute({
   tags: ['Tech stack'],
@@ -118,20 +121,13 @@ techRoute.openapi(getTechByIDRoute, async (c) => {
 
   if (result.length === 0) {
     return c.json(
-      {
-        success: false,
-        message: 'Tech stack not found',
-      },
+      errorResponse('Tech stack not found'),
       404
     );
   }
 
   return c.json(
-    {
-      success: true,
-      message: 'Tech stack fetched successfully',
-      data: result[0],
-    },
+    successResponse(result[0], 'Tech stack fetched successfully'),
     200
   );
 });
@@ -170,20 +166,14 @@ techRoute.openapi(deleteTechRoute, async (c) => {
 
   if (result.length === 0) {
     return c.json(
-      {
-        success: false,
-        message: 'Tech stack not found',
-      },
+      errorResponse('Tech stack not found'),
       404
     );
   }
 
   await db.delete(techStack).where(eq(techStack.id, id));
   return c.json(
-    {
-      success: true,
-      message: 'Tech stack deleted',
-    },
+    successResponse(result[0], 'Tech stack deleted'),
     200
   );
 });
