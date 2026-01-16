@@ -29,6 +29,8 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage
 
-      - name: Report Coverage
-        if: always() # Report even if tests fail
-        uses: davelosert/vitest-coverage-report-action@v2
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}
