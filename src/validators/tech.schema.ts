@@ -12,3 +12,13 @@ export const techSchema = z.object({
 export const techResponseSchema = techSchema.extend({
   id: z.number().openapi({ example: 1 }),
 });
+
+export const techParamSchema = z.object({
+  id: z.coerce.number().openapi({
+    param: {
+      name: 'id',
+      in: 'path',
+    },
+    example: 1,
+  }),
+});
