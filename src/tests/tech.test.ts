@@ -73,7 +73,7 @@ describe('Tech Routes', () => {
 
             // Mock error with Postgres unique violation
             const pgError = new Error('duplicate key value violates unique constraint');
-            (pgError as any).cause = { code: 23505 };
+            (pgError as any).cause = { code: '23505' };
 
             mocks.mockReturning.mockRejectedValue(pgError);
 

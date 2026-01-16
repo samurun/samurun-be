@@ -55,7 +55,7 @@ techRoute.openapi(createTechRoute, async (c) => {
       201
     );
   } catch (error: any) {
-    if (error.cause.code === 23505) {
+    if (error.cause.code === '23505') {
       return c.json(errorResponse('Tech stack already exists'), 409);
     }
     throw error;
