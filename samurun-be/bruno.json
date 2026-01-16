@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "samurun-be",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

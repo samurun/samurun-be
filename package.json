@@ -1,0 +1,31 @@
+{
+  "name": "samurun-be",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/app.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "app:tearup": "docker-compose up -d",
+    "app:teardown": "docker-compose down",
+    "db:generate": "npx drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "docker:dev": "docker-compose up --build"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.9",
+    "@hono/swagger-ui": "^0.5.3",
+    "@hono/zod-openapi": "^1.2.0",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.45.1",
+    "hono": "^4.11.4",
+    "pg": "^8.17.0",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@types/pg": "^8.16.0",
+    "drizzle-kit": "^0.31.8",
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.3"
+  }
+}

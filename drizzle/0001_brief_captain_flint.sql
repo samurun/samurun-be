@@ -1,0 +1,1 @@
+ALTER TABLE "tech_stack" DROP COLUMN "level";
