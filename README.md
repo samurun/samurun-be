@@ -1,5 +1,5 @@
 # Samurun API
-[![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER/REPLACE_WITH_REPO/graph/badge.svg?token=REPLACE_WITH_TOKEN)](https://codecov.io/gh/REPLACE_WITH_OWNER/REPLACE_WITH_REPO)
+[![codecov](https://codecov.io/gh/samurun/samurun-be/graph/badge.svg?token=REPLACE_WITH_TOKEN)](https://codecov.io/gh/samurun/samurun-be)
 
 Backend for personal portfolio & blog. This is a practice project focused on Backend Development and CI/CD workflows.
 
