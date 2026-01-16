@@ -4,10 +4,9 @@ import { eq } from 'drizzle-orm'
 import { summaryParamsSchema, summarySchema, summarySchemaResponse } from '../../validators/sammary.schema.ts';
 import { db } from '../../db/index.ts';
 import { summary } from '../../db/schema.ts';
-import { createResponseSchema } from '../../lib/api.ts';
+import { createResponseSchema, successResponse } from '../../lib/api.ts';
 
 export const summaryRoute = new OpenAPIHono()
-
 
 const createSummaryRoute = createRoute({
     tags: ['Summary'],
@@ -40,11 +39,7 @@ summaryRoute.openapi(createSummaryRoute, async (c) => {
 
     const [result] = await db.insert(summary).values(body).returning()
 
-    return c.json({
-        success: true,
-        message: 'Summary created successfully',
-        data: result,
-    }, 201)
+    return c.json(successResponse(result, 'Summary created successfully'), 201)
 })
 
 const getAllSummaryRoute = createRoute({
@@ -65,11 +60,7 @@ const getAllSummaryRoute = createRoute({
 
 summaryRoute.openapi(getAllSummaryRoute, async (c) => {
     const result = await db.select().from(summary)
-    return c.json({
-        success: true,
-        message: 'Summaries fetched successfully',
-        data: result,
-    })
+    return c.json(successResponse(result, 'Summaries fetched successfully'), 200)
 })
 
 const updateSummaryRoute = createRoute({
@@ -100,14 +91,10 @@ const updateSummaryRoute = createRoute({
 })
 
 summaryRoute.openapi(updateSummaryRoute, async (c) => {
-    const body = c.req.valid('json')
     const id = c.req.param('id')
+    const body = c.req.valid('json')
 
     const [result] = await db.update(summary).set(body).where(eq(summary.id, Number(id))).returning()
 
-    return c.json({
-        success: true,
-        message: 'Summary updated successfully',
-        data: result,
-    })
+    return c.json(successResponse(result, 'Summary updated successfully'), 200)
 })

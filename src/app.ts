@@ -5,7 +5,12 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { swaggerUI } from '@hono/swagger-ui';
 import { summaryRoute } from './routes/v1/summary.ts';
 
+import { errorHandler, notFoundHandler } from './middlewares/error.ts';
+
 const app = new OpenAPIHono();
+
+app.onError(errorHandler);
+app.notFound(notFoundHandler);
 
 app.get('/health', (c) => {
   return c.json({
