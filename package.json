@@ -9,7 +9,8 @@
     "app:teardown": "docker-compose down",
     "db:generate": "npx drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "docker:dev": "docker-compose up --build"
+    "docker:dev": "docker-compose up --build",
+    "test": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",
@@ -26,6 +27,7 @@
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.8",
     "tsx": "^4.21.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.0.17"
   }
 }
