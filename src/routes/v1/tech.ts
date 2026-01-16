@@ -13,6 +13,7 @@ import {
 export const techRoute = new OpenAPIHono();
 
 const createTechRoute = createRoute({
+  tags: ['Tech stack'],
   method: 'post',
   path: '/',
   request: {
@@ -52,6 +53,7 @@ techRoute.openapi(createTechRoute, async (c) => {
 });
 
 const getAllTechRoute = createRoute({
+  tags: ['Tech stack'],
   method: 'get',
   path: '/',
   responses: {
@@ -83,6 +85,7 @@ techRoute.openapi(getAllTechRoute, async (c) => {
 
 
 const getTechByIDRoute = createRoute({
+  tags: ['Tech stack'],
   method: 'get',
   path: '/{id}',
   request: {
@@ -135,6 +138,7 @@ techRoute.openapi(getTechByIDRoute, async (c) => {
 
 
 const deleteTechRoute = createRoute({
+  tags: ['Tech stack'],
   method: 'delete',
   path: '/{id}',
   request: {

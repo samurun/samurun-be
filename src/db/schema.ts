@@ -4,3 +4,10 @@ export const techStack = pgTable('tech_stack', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
 });
+
+
+export const summary = pgTable('summary', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+});
