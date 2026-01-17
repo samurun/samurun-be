@@ -15,6 +15,20 @@
       "when": 1768441924193,
       "tag": "0001_brief_captain_flint",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768553182462,
+      "tag": "0002_round_scorpion",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768577532461,
+      "tag": "0003_hot_clea",
+      "breakpoints": true
     }
   ]
 }

@@ -3,8 +3,14 @@ import { serve } from '@hono/node-server';
 import { techRoute } from './routes/v1/tech.ts';;
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { swaggerUI } from '@hono/swagger-ui';
+import { summaryRoute } from './routes/v1/summary.ts';
+
+import { errorHandler, notFoundHandler } from './middlewares/error.ts';
 
 const app = new OpenAPIHono();
+
+app.onError(errorHandler);
+app.notFound(notFoundHandler);
 
 app.get('/health', (c) => {
   return c.json({
@@ -27,11 +33,12 @@ app.doc('/doc', {
 app.get('/swagger', swaggerUI({ url: '/doc' }));
 
 app.route('/api/v1/tech', techRoute);
+app.route('/api/v1/summary', summaryRoute)
 
 serve(
   {
     fetch: app.fetch,
-    port: 3000,
+    port: Number(process.env.PORT || 3000),
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
