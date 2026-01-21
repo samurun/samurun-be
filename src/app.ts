@@ -1,12 +1,13 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
-import { OpenAPIHono } from '@hono/zod-openapi';
 import { swaggerUI } from '@hono/swagger-ui';
+import { OpenAPIHono } from '@hono/zod-openapi';
 
-import { summaryRoute } from './routes/v1/summary.js';
-import { techRoute } from './routes/v1/tech.js';;
 import { errorHandler, notFoundHandler } from './middlewares/error.js';
 
+import { techRoute } from './routes/v1/tech.js';;
+import { summaryRoute } from './routes/v1/summary.js';
+import { experienceRoute } from './routes/v1/experience.js';
 
 const app = new OpenAPIHono();
 
@@ -35,6 +36,7 @@ app.get('/swagger', swaggerUI({ url: '/doc' }));
 
 app.route('/api/v1/tech', techRoute);
 app.route('/api/v1/summary', summaryRoute)
+app.route('/api/v1/experience', experienceRoute)
 
 serve(
   {
