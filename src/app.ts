@@ -1,15 +1,20 @@
-import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
 
 import { errorHandler, notFoundHandler } from './middlewares/error.js';
+import { env } from './lib/env.js';
 
 import { techRoute } from './routes/v1/tech.js';;
 import { summaryRoute } from './routes/v1/summary.js';
 import { experienceRoute } from './routes/v1/experience.js';
 
 const app = new OpenAPIHono();
+
+app.use('*', logger());
+app.use('*', cors());
 
 app.onError(errorHandler);
 app.notFound(notFoundHandler);
@@ -41,7 +46,7 @@ app.route('/api/v1/experience', experienceRoute)
 serve(
   {
     fetch: app.fetch,
-    port: Number(process.env.PORT || 3000),
+    port: Number(env.PORT),
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
