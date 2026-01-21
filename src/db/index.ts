@@ -4,12 +4,14 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Client } from 'pg';
 import * as schema from './schema.js';
 
+import { env } from '../lib/env.js';
+
 const client = new Client({
-  database: String(process.env.POSTGRES_DB),
-  user: String(process.env.POSTGRES_USER),
-  password: String(process.env.POSTGRES_PASSWORD),
-  host: process.env.POSTGRES_HOST,
-  port: process.env.POSTGRES_PORT ? parseInt(process.env.POSTGRES_PORT) : 5432,
+  database: env.POSTGRES_DB,
+  user: env.POSTGRES_USER,
+  password: env.POSTGRES_PASSWORD,
+  host: env.POSTGRES_HOST,
+  port: parseInt(env.POSTGRES_PORT),
 });
 
 await client.connect();

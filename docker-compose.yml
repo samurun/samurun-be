@@ -2,10 +2,10 @@ version: '3.9'
 
 services:
   api:
-    container_name: portfolio-api
+    container_name: samurun-api
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - .:/app
       - /app/node_modules
@@ -18,7 +18,7 @@ services:
 
   db:
     image: postgres:16-alpine
-    container_name: samurun-db
+    container_name: db
     ports:
       - '5432:5432'
     environment:

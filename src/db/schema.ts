@@ -24,3 +24,10 @@ export const experience = pgTable('experience', {
   skills: text('skills').array().notNull().default([]),
   isRemote: boolean('isRemote').notNull().default(false),
 });
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  password: text('password').notNull(),
+});
