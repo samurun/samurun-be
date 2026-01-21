@@ -1,11 +1,12 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
-import { techRoute } from './routes/v1/tech.ts';;
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { swaggerUI } from '@hono/swagger-ui';
-import { summaryRoute } from './routes/v1/summary.ts';
 
-import { errorHandler, notFoundHandler } from './middlewares/error.ts';
+import { summaryRoute } from './routes/v1/summary.js';
+import { techRoute } from './routes/v1/tech.js';;
+import { errorHandler, notFoundHandler } from './middlewares/error.js';
+
 
 const app = new OpenAPIHono();
 

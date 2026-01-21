@@ -1,8 +1,8 @@
-export { techStack } from './schema.ts';
+export { techStack } from './schema.js';
 
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Client } from 'pg';
-import * as schema from './schema.ts';
+import * as schema from './schema.js';
 
 const client = new Client({
   database: String(process.env.POSTGRES_DB),

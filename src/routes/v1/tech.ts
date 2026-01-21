@@ -1,14 +1,14 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import { eq } from 'drizzle-orm';
 
-import { createResponseSchema, errorResponseSchema, successResponse, errorResponse } from '../../lib/api.ts';
-import { db } from '../../db/index.ts';
-import { techStack } from '../../db/schema.ts';
+import { createResponseSchema, errorResponseSchema, successResponse, errorResponse } from '../../lib/api.js';
+import { db } from '../../db/index.js';
+import { techStack } from '../../db/schema.js';
 import {
   techSchema,
   techResponseSchema,
   techParamSchema,
-} from '../../validators/tech.schema.ts';
+} from '../../validators/tech.schema.js';
 
 export const techRoute = new OpenAPIHono();
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { summaryRoute } from '../routes/v1/summary.ts'
+import { summaryRoute } from '../routes/v1/summary.js'
 
 const mocks = vi.hoisted(() => {
     const mockReturning = vi.fn()
