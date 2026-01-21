@@ -1,10 +1,10 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import { eq } from 'drizzle-orm'
 
-import { createResponseSchema, errorResponse, errorResponseSchema, successResponse } from '../../lib/api.ts';
-import { db } from '../../db/index.ts';
-import { experience } from '../../db/schema.ts'
-import { experienceParamsSchema, experienceSchema, experienceSchemaResponse } from '../../validators/experience.schema.ts';
+import { createResponseSchema, errorResponse, errorResponseSchema, successResponse } from '../../lib/api.js';
+import { db } from '../../db/index.js';
+import { experience } from '../../db/schema.js'
+import { experienceParamsSchema, experienceSchema, experienceSchemaResponse } from '../../validators/experience.schema.js';
 
 
 export const experienceRoute = new OpenAPIHono()

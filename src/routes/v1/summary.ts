@@ -1,10 +1,10 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import { eq } from 'drizzle-orm'
 
-import { summaryParamsSchema, summarySchema, summarySchemaResponse } from '../../validators/sammary.schema.ts';
-import { db } from '../../db/index.ts';
-import { summary } from '../../db/schema.ts';
-import { createResponseSchema, successResponse } from '../../lib/api.ts';
+import { summaryParamsSchema, summarySchema, summarySchemaResponse } from '../../validators/sammary.schema.js';
+import { db } from '../../db/index.js';
+import { summary } from '../../db/schema.js';
+import { createResponseSchema, successResponse } from '../../lib/api.js';
 
 export const summaryRoute = new OpenAPIHono()
 

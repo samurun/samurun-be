@@ -32,3 +32,6 @@ coverage/
 coverage.xml
 lcov.info
 htmlcov/
+
+# build
+dist/

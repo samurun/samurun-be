@@ -3,11 +3,11 @@ import { serve } from '@hono/node-server';
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 
-import { errorHandler, notFoundHandler } from './middlewares/error.ts';
+import { errorHandler, notFoundHandler } from './middlewares/error.js';
 
-import { techRoute } from './routes/v1/tech.ts';;
-import { summaryRoute } from './routes/v1/summary.ts';
-import { experienceRoute } from './routes/v1/experience.ts';
+import { techRoute } from './routes/v1/tech.js';;
+import { summaryRoute } from './routes/v1/summary.js';
+import { experienceRoute } from './routes/v1/experience.js';
 
 const app = new OpenAPIHono();
 

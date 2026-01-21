@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { techRoute } from '../routes/v1/tech.ts';
+import { techRoute } from '../routes/v1/tech.js';
 
 const mocks = vi.hoisted(() => {
     const mockReturning = vi.fn();

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { experienceRoute } from '../routes/v1/experience.ts'
+import { experienceRoute } from '../routes/v1/experience.js'
 
 
 const mocks = vi.hoisted(() => {
