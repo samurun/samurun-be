@@ -10,13 +10,16 @@ const envSchema = z.object({
     POSTGRES_PASSWORD: z.string(),
     POSTGRES_HOST: z.string(),
     POSTGRES_PORT: z.string().default('5432'),
+    JWT_SECRET: z.string(),
 });
 
-const _env = envSchema.safeParse(process.env);
+export const validateEnv = (schema: typeof envSchema, data: any) => {
+    const result = schema.safeParse(data);
+    if (!result.success) {
+        console.error('❌ Invalid environment variables:', result.error.format());
+        process.exit(1);
+    }
+    return result.data;
+};
 
-if (!_env.success) {
-    console.error('❌ Invalid environment variables:', _env.error.format());
-    process.exit(1);
-}
-
-export const env = _env.data;
+export const env = validateEnv(envSchema, process.env);

@@ -1,24 +1,33 @@
 import { serve } from '@hono/node-server';
-import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
 
 import { errorHandler, notFoundHandler } from './middlewares/error.js';
 import { env } from './lib/env.js';
+import { configureOpenAPI } from './lib/configure-openapi.js';
 
-import { techRoute } from './routes/v1/tech.js';;
-import { summaryRoute } from './routes/v1/summary.js';
-import { experienceRoute } from './routes/v1/experience.js';
+import v1Router from './routes/v1/index.js';
+import { authMiddleware } from './middlewares/auth.js';
+import { customLoggerMiddleware } from './middlewares/logger.js';
 
 const app = new OpenAPIHono();
 
-app.use('*', logger());
+// -- Middlewares
+app.use('*', customLoggerMiddleware);
 app.use('*', cors());
 
+app.use('/api/v1/*', (c, next) => {
+  if (c.req.method === 'GET' || c.req.path.startsWith('/api/v1/auth')) {
+    return next();
+  }
+  return authMiddleware(c, next);
+});
+
+// -- Error Handling
 app.onError(errorHandler);
 app.notFound(notFoundHandler);
 
+// -- Health Check
 app.get('/health', (c) => {
   return c.json({
     name: 'samurun-api',
@@ -26,23 +35,13 @@ app.get('/health', (c) => {
   });
 });
 
-// OpenAPI JSON
-app.doc('/doc', {
-  openapi: '3.0.0',
-  info: {
-    title: 'Samurun API',
-    version: '1.0.0',
-    description: 'Backend for portfolio & blog',
-  },
-});
+// -- OpenAPI & Swagger
+configureOpenAPI(app);
 
-// Swagger UI
-app.get('/swagger', swaggerUI({ url: '/doc' }));
+// -- Routes
+app.route('/api/v1', v1Router);
 
-app.route('/api/v1/tech', techRoute);
-app.route('/api/v1/summary', summaryRoute)
-app.route('/api/v1/experience', experienceRoute)
-
+// -- Server
 serve(
   {
     fetch: app.fetch,
