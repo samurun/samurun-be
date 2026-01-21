@@ -12,7 +12,7 @@ jobs:
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,10 +28,19 @@ jobs:
 
       - name: Run tests with coverage
         run: npm run test:coverage
+        env:
+          PORT: 3000
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/samurun
+          NODE_ENV: test
+          POSTGRES_DB: samurun
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          JWT_SECRET: supersecretjwtkey
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
-
