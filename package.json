@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/src/app.js",
     "app:tearup": "docker-compose up -d",
     "app:teardown": "docker-compose down",
     "db:generate": "npx drizzle-kit generate",
