@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { summaryRoute } from '../routes/v1/summary.js'
+import { summaryRoute } from './summary.route.js'
 
 const mocks = vi.hoisted(() => {
     const mockReturning = vi.fn()
@@ -25,7 +25,7 @@ const mocks = vi.hoisted(() => {
     }
 })
 
-vi.mock('../db/index.ts', () => ({
+vi.mock('../../db/client.js', () => ({
     db: {
         insert: mocks.mockInsert,
         select: mocks.mockSelect,
@@ -127,6 +127,21 @@ describe('Summary Routes', () => {
                 data: createdSummary,
             })
             expect(mocks.mockUpdate).toHaveBeenCalled()
+        })
+
+        it('should return null if summary to update is not found', async () => {
+            const updatedSummary = { title: 'Summary 1', description: 'Description 1' }
+            mocks.mockReturning.mockResolvedValue([])
+
+            const res = await summaryRoute.request('/999', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedSummary),
+            })
+
+            expect(res.status).toBe(200)
+            const body = await res.json()
+            expect(body.data).toBeNull()
         })
     })
 })

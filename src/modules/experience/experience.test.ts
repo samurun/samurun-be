@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { experienceRoute } from '../routes/v1/experience.js'
+import { experienceRoute } from './experience.route.js'
 
 
 const mocks = vi.hoisted(() => {
@@ -26,7 +26,7 @@ const mocks = vi.hoisted(() => {
     };
 });
 
-vi.mock('../db/index.ts', () => ({
+vi.mock('../../db/client.js', () => ({
     db: {
         insert: mocks.mockInsert,
         select: mocks.mockSelect,
@@ -90,6 +90,38 @@ describe('Experience Routes', () => {
                 data: createdExperience,
             })
             expect(mocks.mockInsert).toHaveBeenCalled()
+        })
+
+        it('should create a new experience with Date instances', async () => {
+            const newExperience = {
+                logo: '/placeholder.png',
+                position: 'Software Engineer',
+                company: 'Tech Co',
+                type: 'Full-time',
+                startDate: new Date('2019-07-01'),
+                endDate: new Date('2020-10-01'),
+                description: 'Software Engineer',
+                skills: ['React.js'],
+                isRemote: true,
+            }
+            const createdExperience = {
+                id: 1,
+                ...newExperience,
+                startDate: newExperience.startDate.toISOString(),
+                endDate: newExperience.endDate.toISOString(),
+            }
+
+            mocks.mockReturning.mockResolvedValue([createdExperience])
+
+            const res = await experienceRoute.request('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newExperience),
+            })
+
+            expect(res.status).toBe(201)
+            const body = await res.json()
+            expect(body.success).toBe(true)
         })
     })
 
@@ -266,6 +298,18 @@ describe('Experience Routes', () => {
                 message: 'Experience deleted successfully',
                 data: { rowCount: 1 },
             })
+        })
+
+        it('should return 0 for deleted if rowCount is missing', async () => {
+            mocks.mockWhere.mockResolvedValue({}) // No rowCount
+
+            const res = await experienceRoute.request('/1', {
+                method: 'DELETE',
+            })
+
+            expect(res.status).toBe(404)
+            const body = await res.json()
+            expect(body.success).toBe(false)
         })
 
         it('should return 404 if not found', async () => {

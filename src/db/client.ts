@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Client } from 'pg';
 import * as schema from './schema.js';
 
-import { env } from '../lib/env.js';
+import { env } from '../utils/env.js';
 
 const client = new Client({
   database: env.POSTGRES_DB,

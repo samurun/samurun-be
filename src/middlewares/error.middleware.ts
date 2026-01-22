@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { ZodError } from 'zod';
-import { errorResponse } from '../lib/api.js';
+import { errorResponse } from '../utils/api.js';
 
 export const errorHandler = async (err: Error, c: Context) => {
     if (err instanceof HTTPException) {

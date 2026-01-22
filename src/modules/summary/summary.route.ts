@@ -1,12 +1,12 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
-import { eq } from 'drizzle-orm'
 
-import { summaryParamsSchema, summarySchema, summarySchemaResponse } from '../../validators/sammary.schema.js';
-import { db } from '../../db/index.js';
-import { summary } from '../../db/schema.js';
-import { createResponseSchema, successResponse } from '../../lib/api.js';
+import { summaryParamsSchema, summarySchema, summarySchemaResponse } from './summary.validator.js';
+import { createResponseSchema, successResponse } from '../../utils/api.js';
+import { factory } from '../../utils/factory.js';
+import type { Env } from '../../types/hono.js';
+import { SummaryService } from './summary.service.js';
 
-export const summaryRoute = new OpenAPIHono()
+export const summaryRoute = new OpenAPIHono<Env>()
 
 const createSummaryRoute = createRoute({
     tags: ['Summary'],
@@ -37,7 +37,7 @@ const createSummaryRoute = createRoute({
 summaryRoute.openapi(createSummaryRoute, async (c) => {
     const body = c.req.valid('json')
 
-    const [result] = await db.insert(summary).values(body).returning()
+    const result = await SummaryService.create(body)
 
     return c.json(successResponse(result, 'Summary created successfully'), 201)
 })
@@ -59,7 +59,7 @@ const getAllSummaryRoute = createRoute({
 })
 
 summaryRoute.openapi(getAllSummaryRoute, async (c) => {
-    const result = await db.select().from(summary)
+    const result = await SummaryService.getAll()
     return c.json(successResponse(result, 'Summaries fetched successfully'), 200)
 })
 
@@ -91,10 +91,10 @@ const updateSummaryRoute = createRoute({
 })
 
 summaryRoute.openapi(updateSummaryRoute, async (c) => {
-    const id = c.req.param('id')
+    const { id } = c.req.valid('param')
     const body = c.req.valid('json')
 
-    const [result] = await db.update(summary).set(body).where(eq(summary.id, Number(id))).returning()
+    const result = await SummaryService.update(id, body)
 
     return c.json(successResponse(result, 'Summary updated successfully'), 200)
 })
