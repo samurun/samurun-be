@@ -128,5 +128,20 @@ describe('Summary Routes', () => {
             })
             expect(mocks.mockUpdate).toHaveBeenCalled()
         })
+
+        it('should return null if summary to update is not found', async () => {
+            const updatedSummary = { title: 'Summary 1', description: 'Description 1' }
+            mocks.mockReturning.mockResolvedValue([])
+
+            const res = await summaryRoute.request('/999', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedSummary),
+            })
+
+            expect(res.status).toBe(200)
+            const body = await res.json()
+            expect(body.data).toBeNull()
+        })
     })
 })
