@@ -58,4 +58,36 @@ describe('ExperienceService Unit Tests', () => {
             endDate: data.endDate.toISOString(),
         });
     });
+
+    it('create: should handle string types for startDate and endDate', async () => {
+        const data = {
+            startDate: '2020-01-01',
+            endDate: '2020-12-31',
+        };
+        const mockReturning = vi.fn().mockResolvedValue([{ id: 1 }]);
+        (db.insert as any).mockReturnValue({ values: vi.fn().mockReturnValue({ returning: mockReturning }) });
+
+        await ExperienceService.create(data);
+
+        const valuesSpy = (db.insert as any)().values;
+        expect(valuesSpy).toHaveBeenCalledWith(data);
+    });
+
+    it('update: should handle string types for startDate and endDate', async () => {
+        const data = {
+            startDate: '2020-01-01',
+            endDate: '2020-12-31',
+        };
+        const mockReturning = vi.fn().mockResolvedValue([{ id: 1 }]);
+        (db.update as any).mockReturnValue({
+            set: vi.fn().mockReturnValue({
+                where: vi.fn().mockReturnValue({ returning: mockReturning })
+            })
+        });
+
+        await ExperienceService.update(1, data);
+
+        const setSpy = (db.update as any)().set;
+        expect(setSpy).toHaveBeenCalledWith(data);
+    });
 });
