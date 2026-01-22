@@ -1,13 +1,11 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
-import { eq } from 'drizzle-orm'
 
-import { createResponseSchema, errorResponse, errorResponseSchema, successResponse } from '../../lib/api.js';
-import { db } from '../../db/index.js';
-import { experience } from '../../db/schema.js'
-import { experienceParamsSchema, experienceSchema, experienceSchemaResponse } from '../../validators/experience.schema.js';
+import { createResponseSchema, errorResponse, errorResponseSchema, successResponse } from '../../utils/api.js';
+import { experienceParamsSchema, experienceSchema, experienceSchemaResponse } from './experience.validator.js';
+import { ExperienceService } from './experience.service.js';
+import type { Env } from '../../types/hono.js';
 
-
-export const experienceRoute = new OpenAPIHono()
+export const experienceRoute = new OpenAPIHono<Env>()
 
 const createExperienceRoute = createRoute({
     tags: ['Experience'],
@@ -36,12 +34,7 @@ const createExperienceRoute = createRoute({
 
 experienceRoute.openapi(createExperienceRoute, async (c) => {
     const body = c.req.valid('json')
-
-    const [result] = await db.insert(experience).values({
-        ...body,
-        startDate: body.startDate.toISOString(),
-        endDate: body.endDate.toISOString(),
-    }).returning()
+    const result = await ExperienceService.create(body)
 
     return c.json(successResponse(result, 'Experience created successfully'), 201)
 })
@@ -63,7 +56,7 @@ const getAllExperienceRoute = createRoute({
 })
 
 experienceRoute.openapi(getAllExperienceRoute, async (c) => {
-    const result = await db.select().from(experience)
+    const result = await ExperienceService.getAll()
     return c.json(successResponse(result, 'Experiences fetched successfully'), 200)
 })
 
@@ -95,13 +88,13 @@ const getExperienceByIdRoute = createRoute({
 })
 
 experienceRoute.openapi(getExperienceByIdRoute, async (c) => {
-    const id = c.req.param('id')
-    const result = await db.select().from(experience).where(eq(experience.id, Number(id)))
+    const { id } = c.req.valid('param')
+    const result = await ExperienceService.getById(id)
 
-    if (result.length === 0) {
+    if (!result) {
         return c.json(errorResponse('Experience not found'), 404)
     }
-    return c.json(successResponse(result[0], 'Experience fetched successfully'), 200)
+    return c.json(successResponse(result, 'Experience fetched successfully'), 200)
 })
 
 const updateExperienceRoute = createRoute({
@@ -139,19 +132,15 @@ const updateExperienceRoute = createRoute({
 })
 
 experienceRoute.openapi(updateExperienceRoute, async (c) => {
-    const id = c.req.param('id')
+    const { id } = c.req.valid('param')
     const body = c.req.valid('json')
 
-    const result = await db.update(experience).set({
-        ...body,
-        startDate: body.startDate.toISOString(),
-        endDate: body.endDate.toISOString(),
-    }).where(eq(experience.id, Number(id))).returning()
+    const result = await ExperienceService.update(id, body)
 
-    if (result.length === 0) {
+    if (!result) {
         return c.json(errorResponse('Experience not found'), 404)
     }
-    return c.json(successResponse(result[0], 'Experience updated successfully'), 200)
+    return c.json(successResponse(result, 'Experience updated successfully'), 200)
 })
 
 const deleteExperienceRoute = createRoute({
@@ -182,11 +171,11 @@ const deleteExperienceRoute = createRoute({
 })
 
 experienceRoute.openapi(deleteExperienceRoute, async (c) => {
-    const id = c.req.param('id')
-    const result = await db.delete(experience).where(eq(experience.id, Number(id)))
+    const { id } = c.req.valid('param')
+    const rowCount = await ExperienceService.delete(id)
 
-    if (result.rowCount === 0) {
+    if (rowCount === 0) {
         return c.json(errorResponse('Experience not found'), 404)
     }
-    return c.json(successResponse(result, 'Experience deleted successfully'), 200)
+    return c.json(successResponse({ rowCount }, 'Experience deleted successfully'), 200)
 })

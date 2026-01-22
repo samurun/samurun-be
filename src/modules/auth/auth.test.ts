@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { authRoute } from '../routes/v1/auth.js';
-import { db } from '../db/index.js';
+import { authRoute } from './auth.route.js';
+import { db } from '../../db/client.js';
 
-vi.mock('../db/index.js', () => ({
+vi.mock('../../db/client.js', () => ({
     db: {
         insert: vi.fn(),
         select: vi.fn(),
     },
 }));
 
-vi.mock('../lib/auth-utils.js', () => ({
+vi.mock('../../utils/auth-utils.js', () => ({
     hashPassword: vi.fn().mockResolvedValue('hashed_password'),
     comparePassword: vi.fn().mockResolvedValue(true),
 }));

@@ -16,8 +16,10 @@ const getStatusColor = (status: number) => {
     return RESET;
 };
 
+import { factory } from "../utils/factory.js";
+
 // Define the custom middleware
-export const customLoggerMiddleware = async (c: Context, next: Next) => {
+export const customLoggerMiddleware = factory.createMiddleware(async (c, next) => {
     const start = performance.now();
     await next();
     const end = performance.now();
@@ -31,4 +33,4 @@ export const customLoggerMiddleware = async (c: Context, next: Next) => {
     console.log(
         `${BOLD}[API]${RESET} ${method} ${path} ${color}${status}${RESET} - ${responseTime.toFixed(2)}ms`
     );
-};
+});

@@ -2,12 +2,12 @@ import { serve } from '@hono/node-server';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 
-import { errorHandler, notFoundHandler } from './middlewares/error.js';
-import { env } from './lib/env.js';
-import { configureOpenAPI } from './lib/configure-openapi.js';
+import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
+import { env } from './utils/env.js';
+import { configureOpenAPI } from './utils/configure-openapi.js';
 
-import v1Router from './routes/v1/index.js';
-import { authMiddleware } from './middlewares/auth.js';
+import routes from './routes.js';
+import { authMiddleware } from './middlewares/auth.middleware.js';
 import { customLoggerMiddleware } from './middlewares/logger.js';
 
 const app = new OpenAPIHono();
@@ -39,7 +39,9 @@ app.get('/health', (c) => {
 configureOpenAPI(app);
 
 // -- Routes
-app.route('/api/v1', v1Router);
+const appRoutes = app.route('/api/v1', routes);
+
+export type AppType = typeof appRoutes;
 
 // -- Server
 serve(

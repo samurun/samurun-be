@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { techRoute } from '../routes/v1/tech.js';
+import { techRoute } from './tech.route.js';
 
 const mocks = vi.hoisted(() => {
     const mockReturning = vi.fn();
@@ -21,7 +21,7 @@ const mocks = vi.hoisted(() => {
     };
 });
 
-vi.mock('../db/index.ts', () => ({
+vi.mock('../../db/client.js', () => ({
     db: {
         insert: mocks.mockInsert,
         select: mocks.mockSelect,

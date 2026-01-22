@@ -1,10 +1,5 @@
 import { z } from 'zod';
-
-export type ApiResponse<T = void> = {
-    success: boolean;
-    message: string;
-    data?: T;
-};
+import type { ApiResponse } from '../types/api.js';
 
 export const createResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     z.object({

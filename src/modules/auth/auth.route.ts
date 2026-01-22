@@ -1,19 +1,14 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
-import { eq } from 'drizzle-orm';
 import { sign } from 'hono/jwt';
 
-import { env } from '../../lib/env.js';
-import { db } from '../../db/index.js';
-import { users } from '../../db/schema.js';
-import { hashPassword, comparePassword } from '../../lib/auth-utils.js';
-import { successResponse, errorResponse } from '../../lib/api.js';
-import { loginSchema, signupSchema } from '../../validators/auth.schema.js';
+import { env } from '../../utils/env.js';
+import { hashPassword, comparePassword } from '../../utils/auth-utils.js';
+import { successResponse, errorResponse } from '../../utils/api.js';
+import { loginSchema, signupSchema } from './auth.validator.js';
+import { UserService } from '../user/user.service.js';
+import type { Env } from '../../types/hono.js';
 
-const authRoute = new OpenAPIHono();
-
-
-
-
+const authRoute = new OpenAPIHono<Env>();
 
 authRoute.openapi(
     createRoute({
@@ -59,21 +54,17 @@ authRoute.openapi(
     async (c) => {
         const { name, email, password } = c.req.valid('json');
 
-        const [existingUser] = await db.select().from(users).where(eq(users.email, email));
+        const existingUser = await UserService.findByEmail(email);
         if (existingUser) {
             return c.json(errorResponse('Email already in use'), 409);
         }
 
         const hashedPassword = await hashPassword(password);
 
-        const [newUser] = await db.insert(users).values({
+        const newUser = await UserService.create({
             name,
             email,
             password: hashedPassword,
-        }).returning({
-            id: users.id,
-            name: users.name,
-            email: users.email,
         });
 
         return c.json(successResponse(newUser, 'User created successfully') as any, 201);
@@ -115,7 +106,7 @@ authRoute.openapi(
     async (c) => {
         const { email, password } = c.req.valid('json');
 
-        const [user] = await db.select().from(users).where(eq(users.email, email));
+        const user = await UserService.findByEmail(email);
 
         if (!user || !(await comparePassword(password, user.password))) {
             return c.json(errorResponse('Invalid credentials'), 401);

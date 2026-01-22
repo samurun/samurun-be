@@ -1,16 +1,17 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
-import { eq } from 'drizzle-orm';
 
-import { createResponseSchema, errorResponseSchema, successResponse, errorResponse } from '../../lib/api.js';
-import { db } from '../../db/index.js';
-import { techStack } from '../../db/schema.js';
+import { createResponseSchema, errorResponseSchema, successResponse, errorResponse } from '../../utils/api.js';
 import {
   techSchema,
   techResponseSchema,
   techParamSchema,
-} from '../../validators/tech.schema.js';
+} from './tech.validator.js';
 
-export const techRoute = new OpenAPIHono();
+import { factory } from '../../utils/factory.js';
+import type { Env } from '../../types/hono.js';
+import { TechService } from './tech.service.js';
+
+export const techRoute = new OpenAPIHono<Env>();
 
 const createTechRoute = createRoute({
   tags: ['Tech stack'],
@@ -49,13 +50,13 @@ techRoute.openapi(createTechRoute, async (c) => {
   const body = c.req.valid('json');
 
   try {
-    const [result] = await db.insert(techStack).values(body).returning();
+    const result = await TechService.create(body);
     return c.json(
       successResponse(result, 'Tech stack created successfully'),
       201
     );
   } catch (error: any) {
-    if (error.cause.code === '23505') {
+    if (error.cause?.code === '23505') {
       return c.json(errorResponse('Tech stack already exists'), 409);
     }
     throw error;
@@ -79,7 +80,7 @@ const getAllTechRoute = createRoute({
 });
 
 techRoute.openapi(getAllTechRoute, async (c) => {
-  const results = await db.select().from(techStack);
+  const results = await TechService.getAll();
 
   return c.json(
     successResponse(results, 'Tech stacks fetched successfully'),
@@ -117,9 +118,9 @@ const getTechByIDRoute = createRoute({
 
 techRoute.openapi(getTechByIDRoute, async (c) => {
   const { id } = c.req.valid('param');
-  const result = await db.select().from(techStack).where(eq(techStack.id, id));
+  const result = await TechService.getById(id);
 
-  if (result.length === 0) {
+  if (!result) {
     return c.json(
       errorResponse('Tech stack not found'),
       404
@@ -127,7 +128,7 @@ techRoute.openapi(getTechByIDRoute, async (c) => {
   }
 
   return c.json(
-    successResponse(result[0], 'Tech stack fetched successfully'),
+    successResponse(result, 'Tech stack fetched successfully'),
     200
   );
 });
@@ -162,18 +163,17 @@ const deleteTechRoute = createRoute({
 
 techRoute.openapi(deleteTechRoute, async (c) => {
   const { id } = c.req.valid('param');
-  const result = await db.select().from(techStack).where(eq(techStack.id, id));
+  const result = await TechService.delete(id);
 
-  if (result.length === 0) {
+  if (!result) {
     return c.json(
       errorResponse('Tech stack not found'),
       404
     );
   }
 
-  await db.delete(techStack).where(eq(techStack.id, id));
   return c.json(
-    successResponse(result[0], 'Tech stack deleted'),
+    successResponse(result, 'Tech stack deleted'),
     200
   );
 });
